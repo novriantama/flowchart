@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('blank');
-});
-
-//Route::get('/home', ['as' => '', 'uses' => '']);
+Route::get('/', ['as' => 'index', 'uses' => 'HomeController@index']);
+Route::get('/add-flow', ['as' => 'add-flow', 'uses' => 'HomeController@createFlow']);
+Route::post('/store-flow', ['as' => 'store-flow', 'uses' => 'HomeController@storeFlow']);
+Route::delete('/destroy-flow', ['as' => 'destroy-flow', 'uses' => 'HomeController@destroyFlow']);
