@@ -9,166 +9,221 @@
         <div class="section-body">
             <div class="card">
                 <div class="card-header">
-                    <h4>Flowchart</h4>
+                    <h4>Choose Flowchart</h4>
                     <div class="card-header-action">
-                        <a href="{{ route('add-flow') }}" class="btn btn-primary">Add Flow</a>
-                        
-                        <form action="{{ route('destroy-flow') }}" id="form-delete" method="POST">
-                            @csrf
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input id="item-id" type="hidden" name="id" value="">
-                            <button type="submit" onclick="this.form.submit(); this.disabled=true; this.innerHTML='Mengirim…';" class="btn btn-danger"> Delete Flowchart </button>
-                        </form>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Flowchart</button>
                     </div>
                 </div>
                 <div class="card-body">
-
-                    <div class="mermaid text-center">
-                        graph TD
-                        @php
-                            $i = 1;
-                        @endphp
-                        @foreach ($chart as $item)
-                            @if ($i == 1)
-                                @switch($item->type_id)
-                                    @case(1)
-        
-                            {{$item->id}}([{{$item->chart_name}}])
-                            {{$item->id}}
-                                        @break
-                                    @case(2)
-        
-                            {{$item->id}}({{$item->chart_name}})
-                            {{$item->id}} 
-                                        @break
-                                    @case(3)
-        
-                            {{$item->id}}{ {{$item->chart_name}} }
-                            {{$item->id}} 
-                                        @break
-                                    @case(4)
-        
-                            {{$item->id}}[/{{$item->chart_name}}/]
-                            {{$item->id}} 
-                                        @break
-                                    @case(5)
-        
-                            {{$item->id}}[[{{$item->chart_name}}]]
-                            {{$item->id}} 
-                                        @break
-                                    @case(6)
-        
-                            {{$item->id}}(({{$item->chart_name}}))
-                            {{$item->id}}
-                                        @break
-                                    @default
-                                        
-                                @endswitch
-                            @else
-                                @switch($item->type_id)
-                                    @case(1)
-        
-                            {{$item->id}}([{{$item->chart_name}}])
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @case(2)
-        
-                            {{$item->id}}({{$item->chart_name}})
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @case(3)
-        
-                            {{$item->id}}{ {{$item->chart_name}} }
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @case(4)
-        
-                            {{$item->id}}[/{{$item->chart_name}}/]
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @case(5)
-        
-                            {{$item->id}}[[{{$item->chart_name}}]]
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @case(6)
-        
-                            {{$item->id}}(({{$item->chart_name}}))
-                            {{$item->previous_chart}} -->@if ($item->flowline_name)|{{$item->flowline_name}}|@endif {{$item->id}}
-                                        @break
-                                    @default
-                                        
-                                @endswitch
-                            @endif
-                            @php
-                                $i++;
-                            @endphp
-                        @endforeach
-                        @foreach ($chart as $item)
-                            @switch($item->action_type)
-                                @case(2)
-        
-                            click {{$item->id}} "{{$item->action}}" "a link"
-                                    @break
-                                @case(3)
-                                
-                            click {{$item->id}} showFullFirstSquad "{{$item->action}}"
-                                    @break
-                                @default
-                                    
-                            @endswitch
-                        @endforeach
-                    </div>
+                    @if ($flowchart)
+                        <div class="form-group">
+                            <label>Which flowchart you want to be displayed?</label>
+                            <select class="form-control" id="mySelect" onchange="fun()">
+                                @foreach ($flowchart as $item)
+                                    <option value="{{$item->id}}" selected>{{$item->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                 </div>
             </div>
+            @if ($flowchart)
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Flowchart</h4>
+                        <div class="card-header-action">
+                            <a href="" class="btn btn-primary" id="add-obj">Add Object</a>
+                            
+                            {{-- <form action="{{ route('destroy-flow') }}" id="form-delete" method="POST">
+                                @csrf
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input id="item-id" type="hidden" name="id" value="">
+                                <button type="submit" onclick="this.form.submit(); this.disabled=true; this.innerHTML='Mengirim…';" class="btn btn-danger"> Delete Object </button>
+                            </form> --}}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="diagram"
+                        style="width:1540px; height:600px; background-color: #DAE4E4;">
+
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Flowchart</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{ route('store-flowchart') }}" method="POST">
+            @csrf
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Flowchart Name</label>
+                    <div class="input-group">
+                    <input type="text" class="form-control" placeholder="name" name="name">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var itemId = document.getElementById("mySelect").value;
+    var url = '{{ route("add-flow", ["flowchart" => ":id"]) }}';
+        url = url.replace(':id', itemId);
+    document.getElementById("add-obj").href = url;
+
+</script>
 <script type="text/javascript">
-    var chart = {!! json_encode($chart->toArray()) !!};
+	var result = {!! json_encode($flowchart->toArray()) !!};
 
-    mermaid.initialize({
-        startOnLoad: true, securityLevel: 'loose', logLevel: 1
+    var $ = go.GraphObject.make;
+
+    var diagram = $(go.Diagram, "diagram",
+    {
+      "undoManager.isEnabled": true,
+      layout: $(go.TreeLayout,
+                { angle: 90, layerSpacing: 35 })
     });
-    function showFullFirstSquad(elemName) {
-    var action;
-    for (var i = 0; i < chart.length; i++){
-        if (chart[i].id == elemName){
-            action = chart[i].action;
+    diagram.nodeTemplate =
+        $(go.Node, "Auto",
+        new go.Binding("location", "loc", go.Point.parse),
+        $(go.Shape, "Ellipse",
+            { strokeWidth: 2, fill: "white" },
+            new go.Binding("figure", "figure")
+          ),
+        $(go.TextBlock,
+            { margin: 12, stroke: "black", font: "bold 16px sans-serif" },
+            new go.Binding("text", "key"),
+            new go.Binding("url", "url"),
+            new go.Binding("aksi", "aksi")),
+        {
+            click: function(e, obj) {
+                if (obj.part.data.aksi) {
+                    alert("show: " + encodeURIComponent(obj.part.data.aksi));
+                }
+                if (obj.part.data.url) {
+                    window.open("http://" + encodeURIComponent(obj.part.data.url));
+                }
+            }
+        });
+    
+    diagram.linkTemplate =
+        $(go.Link,
+        { routing: go.Link.Orthogonal, corner: 5 },
+        $(go.Shape));
+    var nodeDataArray = [];
+    var linkDataArray = [];
+    result.forEach(function(result) {
+        if (result.id == itemId) {
+            result.obyek.forEach(function(obyek) {
+                if (obyek.action_type == 2) {
+                    var currentNode = {
+                        'key': obyek.name,
+                        'figure': obyek.type,
+                        'url': obyek.action
+                    }
+                    var currentLink = {
+                        'from': obyek.parent,
+                        'to': obyek.name
+                    }
+                    nodeDataArray.push(currentNode);
+                    linkDataArray.push(currentLink);
+                }else if(obyek.action_type == 3){
+                    var currentNode = {
+                        'key': obyek.name,
+                        'figure': obyek.type,
+                        'aksi': obyek.action
+                    }
+                    var currentLink = {
+                        'from': obyek.parent,
+                        'to': obyek.name
+                    }
+                    nodeDataArray.push(currentNode);
+                    linkDataArray.push(currentLink);
+                }else{
+                    var currentNode = {
+                        'key': obyek.name,
+                        'figure': obyek.type
+                    }
+                    var currentLink = {
+                        'from': obyek.parent,
+                        'to': obyek.name
+                    }
+                    nodeDataArray.push(currentNode);
+                    linkDataArray.push(currentLink);
+                }
+                console.log(linkDataArray);
+            });
         }
+    });
+    diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+    function fun() {
+        itemId = document.getElementById("mySelect").value;
+        var nodeDataArray = [];
+        var linkDataArray = [];
+        result.forEach(function(result) {
+            if (result.id == itemId) {
+                result.obyek.forEach(function(obyek) {
+                    if (obyek.action_type == 2) {
+                        var currentNode = {
+                            'key': obyek.name,
+                            'figure': obyek.type,
+                            'url': obyek.action
+                        }
+                        var currentLink = {
+                            'from': obyek.parent,
+                            'to': obyek.name
+                        }
+                        nodeDataArray.push(currentNode);
+                        linkDataArray.push(currentLink);
+                    }else if(obyek.action_type == 3){
+                        var currentNode = {
+                            'key': obyek.name,
+                            'figure': obyek.type,
+                            'aksi': obyek.action
+                        }
+                        var currentLink = {
+                            'from': obyek.parent,
+                            'to': obyek.name
+                        }
+                        nodeDataArray.push(currentNode);
+                        linkDataArray.push(currentLink);
+                    }else{
+                        var currentNode = {
+                            'key': obyek.name,
+                            'figure': obyek.type
+                        }
+                        var currentLink = {
+                            'from': obyek.parent,
+                            'to': obyek.name
+                        }
+                        nodeDataArray.push(currentNode);
+                        linkDataArray.push(currentLink);
+                    }
+                    console.log(linkDataArray);
+                });
+            }
+        });
+        diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
     }
-        alert(action);
-    }
-    
-    // mermaid.mermaidAPI.initialize({
-    //     startOnLoad:true, securityLevel: 'loose', logLevel: 1
-    // });
-    
-    
-    // $(function(){
-    //     // Example of using the API
-    //     var element = document.querySelector("#graphDiv");
-
-    //     var insertSvg = function(svgCode, bindFunctions){
-    //         element.innerHTML = svgCode;
-    //         bindFunctions();
-    //     };
-
-    //     var graphDefinition = 'graph TD\n0(Christmas)\n0--> 2(Go shopping)\n --> 3{Let me think}\n3 -->|One| 4[Laptop]\n3 -->|Two| 5(iPhone)\n3 -->|Three| 6[fa:fa-car Car]\n6--> 7(Bugatti)\nclick 2 "http://www.github.com" "This is a link"\nclick 4 showFullFirstSquad "test"\n';
-    //     var graph = mermaid.mermaidAPI.render('graphDiv0', graphDefinition, insertSvg);
-    // });
-
-
-    // function showFullFirstSquad(elemName) {
-    //     alert(elemName);
-    // }
-    // function onNodeClick(nodeId){
-    //     alert(nodeId);
-    // }
-    // var graphDefinition = 'graph TD\nA[Christmas] -->|Get money| B(Go shopping)\nB --> C{Let me think}\nC -->|One| D[Laptop]\nC -->|Two| E[iPhone]\nC -->|Three| F[fa:fa-car Car]\nclick B "http://www.github.com" "This is a link"\nclick D showFullFirstSquad "test"\n';
 </script>
 
 @stop

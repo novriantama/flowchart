@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\FlowchartModel;
-use App\FlowchartTypeModel;
+use App\ObjectModel;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Input;
@@ -19,8 +19,8 @@ class HomeController extends Controller
     public function index()
     {
         $title = 'Flowchart';
-        $chart = FlowchartModel::with('tipe')->get();
-        return view('blank', compact('title', 'chart'));
+        $flowchart = FlowchartModel::with('obyek')->get();
+        return view('blank', compact('title', 'flowchart'));
     }
 
     /**
@@ -32,14 +32,12 @@ class HomeController extends Controller
     {
         //
     }
-    public function createFlow()
+    public function createFlow($flowchart)
     {
         //
-        $title = 'Add FlowChart';
-        $type = FlowchartTypeModel::get();
-        $cnt = FlowchartModel::count();
-        $chart = FlowchartModel::get();
-        return view('addFlow', compact('title', 'type', 'cnt', 'chart'));
+        $title = 'Add Object';
+        $chart = ObjectModel::where('flowchart_id', '=', $flowchart)->get();
+        return view('addFlow', compact('title', 'chart', 'flowchart'));
     }
 
     /**
@@ -53,43 +51,54 @@ class HomeController extends Controller
         //
     }
 
-    public function storeFlow(Request $request)
+    public function storeFlowchart(Request $request)
     {
-        $cnt = FlowchartModel::count();
-
         $requestData = $request->only([
-            'type_id',
-            'chart_name',
-            'flowline_name',
-            'previous_chart',
-            'action_type',
-            'action'
+            'name'
         ]);
-        $validator;
-        if ($cnt > 0) {
-            $validator = Validator::make($requestData,[
-                'type_id' => 'required|integer',
-                'chart_name' => 'required|string',
-                'flowline_name' => 'nullable|string',
-                'previous_chart' => 'required|integer',
-                'action_type' => 'nullable|integer',
-                'action' => 'nullable|string'
-            ]);
-        }else {
-            $validator = Validator::make($requestData,[
-                'type_id' => 'required|integer',
-                'chart_name' => 'required|string',
-                'flowline_name' => 'nullable|string',
-                'previous_chart' => 'nullable|integer',
-                'action_type' => 'nullable|integer',
-                'action' => 'nullable|string'
-            ]);
-        }
+        $validator = Validator::make($requestData,[
+            'name' => 'required|string'
+        ]);
+        
 
         if ($validator->passes()) {
             $flowchart = FlowchartModel::create($requestData);
             
             if ($flowchart) {
+                return redirect()->back()->with(['successMessage' => "Success"]);
+            }
+            return redirect()->back()->with(['errorMessage' => 'Failed']);
+        }
+        return redirect()->back()
+            ->withInput()
+            ->withErrors($validator)
+            ->with(['errorMessage' => 'Data not valid']);
+    }
+
+    public function storeFlow(Request $request)
+    {
+
+        $requestData = $request->only([
+            'flowchart_id',
+            'name',
+            'type',
+            'parent',
+            'action_type',
+            'action'
+        ]);
+        $validator = Validator::make($requestData,[
+            'flowchart_id' => 'required',
+            'name' => 'required|string',
+            'type' => 'required|string',
+            'parent' => 'nullable|string',
+            'action_type' => 'nullable|integer',
+            'action' => 'nullable|string'
+        ]);
+
+        if ($validator->passes()) {
+            $object = ObjectModel::create($requestData);
+            
+            if ($object) {
                 return redirect()->route('index')->with(['successMessage' => "Success"]);
             }
             return redirect()->back()->with(['errorMessage' => 'Failed']);

@@ -13,11 +13,7 @@ class CreateFlowchartTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('flowchart_type', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
+        
     }
 
     /**

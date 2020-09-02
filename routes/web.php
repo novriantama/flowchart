@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', ['as' => 'index', 'uses' => 'HomeController@index']);
-Route::get('/add-flow', ['as' => 'add-flow', 'uses' => 'HomeController@createFlow']);
+Route::get('/add-flow/{flowchart}', ['as' => 'add-flow', 'uses' => 'HomeController@createFlow']);
 Route::post('/store-flow', ['as' => 'store-flow', 'uses' => 'HomeController@storeFlow']);
+Route::post('/store-flowchart', ['as' => 'store-flowchart', 'uses' => 'HomeController@storeFlowchart']);
 Route::delete('/destroy-flow', ['as' => 'destroy-flow', 'uses' => 'HomeController@destroyFlow']);

@@ -10,16 +10,11 @@ class FlowchartModel extends Model
     protected $table = 'flowchart';
 
     protected $fillable = [
-        'type_id',
-        'chart_name',
-        'flowline_name',
-        'previous_chart',
-        'action_type',
-        'action'
+        'name'
     ];
 
-    public function tipe()
+    public function obyek()
     {
-        return $this->belongsTo(FlowchartTypeModel::class, 'type_id', 'id');
+        return $this->hasMany(ObjectModel::class, 'flowchart_id', 'id');
     }
 }

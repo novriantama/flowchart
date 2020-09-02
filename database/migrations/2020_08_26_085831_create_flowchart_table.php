@@ -15,19 +15,7 @@ class CreateFlowchartTable extends Migration
     {
         Schema::create('flowchart', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('type_id')
-                    ->constrained('flowchart_type')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
-            $table->string('chart_name');
-            $table->string('flowline_name')
-                    ->nullable();
-            $table->integer('previous_chart')
-                    ->nullable();
-            $table->integer('action_type')
-                    ->nullable();
-            $table->string('action')
-                    ->nullable();
+            $table->string('name');
             $table->timestamps();
         });
     }
